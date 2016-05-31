@@ -1,0 +1,1 @@
+// PhotoIndexer.h

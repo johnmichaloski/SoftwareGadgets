@@ -1,0 +1,359 @@
+
+ m_webBrowser.ExecWB(OLECMDID_PAGESETUP, OLECMDEXECOPT_PROMPTUSER,
+                       NULL, NULL);
+                       
+LRESULT WebViewWindow::OnGoBack(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled)
+{
+    HRESULT hr = E_FAIL;
+
+    // If we're not on the original page, just let the browser navigate back.
+    if (!this->originalContentLoaded)
+        hr = this->browser->GoBack();
+
+    // If the browser failed to go back, and we we're not already on the original page, reload the original content.
+    if (FAILED(hr) && !this->originalContentLoaded)
+    {
+        CComQIPtr<IServiceProvider> serviceProvider = browser;
+        if (serviceProvider == NULL)
+            return 0;
+
+        CComPtr<ITravelLogStg> travelLog = NULL;
+        serviceProvider->QueryService(SID_STravelLogCursor, IID_ITravelLogStg, (void**)&travelLog);
+
+        if (travelLog == NULL)
+            return 0;
+
+        CComPtr<IEnumTravelLogEntry> entries = NULL;
+        travelLog->EnumEntries(TLEF_ABSOLUTE, &entries);
+
+        wchar_t *url = NULL;
+        wchar_t *title = NULL;
+        wchar_t *previousUrl = NULL;
+
+        this->savedTravelLog.clear();
+
+        // Save a copy of the browser travel log. We'll restore the travel log when the browser navigates forward.
+        ITravelLogEntry *entry;
+        while (entries->Next(1, &entry, NULL) == S_OK)
+        {
+            entry->GetURL(&url);
+            entry->GetTitle(&title);
+
+            // Do not add duplicate URLs to the saved travel log.
+            if (url != NULL && (previousUrl == NULL || wcscmp(url, previousUrl) != 0))
+            {
+                WebViewTravelLogEntry savedEntry(url, title);
+                this->savedTravelLog.push_back(savedEntry);
+
+                if (previousUrl != NULL)
+                    CoTaskMemFree(previousUrl);
+
+                previousUrl = url;
+            }
+            else
+            {
+                CoTaskMemFree(url); // Duplicate URL
+            }
+            CoTaskMemFree(title);
+            entry->Release();
+        }
+
+        if (previousUrl != NULL)
+            CoTaskMemFree(previousUrl);
+
+        // Internet Explorer does not fill TravelLog details for the current page until the browser navigates
+        // away from the page. If the travel log is empty, add the current page to it. This will handle the case
+        // when the browser navigates away from the original content, and then directly back to the original.
+        if (this->savedTravelLog.size() == 0)
+        {
+            BSTR url = NULL;
+            BSTR title = NULL;
+            browser->get_LocationURL(&url);
+            browser->get_LocationName(&title);
+
+            WebViewTravelLogEntry savedEntry(url, title);
+            this->savedTravelLog.push_back(savedEntry);
+
+            // The travel log entry creates a copy of the strings, so free our references
+            SysFreeString(url);
+            SysFreeString(title);
+        }
+
+        // Set the clear travel log flag. OnDocumentComplete checks this flag when a page is loaded. If the flag is set,
+        // and the browser has moved away from the original content, the travel log is cleared. The browser doesn't consider
+        // loading content using HTMLMoniker to a real navigation event, so it doesn't realize that it needs to clear the travel
+        // log if the browser goes back to the original content, and then follows a different link. (We can't clear the travel
+        // log here because you can't remove the current entry from the travel log, we have to wait until the browser navigates.)
+        this->mustClearTravelLog = TRUE;
+
+        // Load original content
+        this->SetHTML();
+    }
+
+    return ERROR_SUCCESS;
+}
+
+Controlling Navigation (Revisited)
+If the MSHTML control is aggregated, the controlling DocObject is in a position to regulate navigation events. The fact that a document can navigate on its own implies that it will also take care of updating the navigation history.
+In Internet Explorer 6 and later, the DocObject can indicate to the client site that it can navigate using CGID_DocHostCmdPriv (a privately defined command group GUID) and the DOCHOST_DOCCANNAVIGATE command. A pointer to the object that implements the IHTMLWindow2 interface is passed with the command in the VARIANTARG* parameter pvaIn. (Set pvaIn to NULL if the document cannot perform its own navigation.)
+DEFINE_GUID(CGID_DocHostCmdPriv, 0x000214D4L, 0, 0, 0xC0, 0, 0, 0, 0, 0, 0, 0x46);
+#define DOCHOST_DOCCANNAVIGATE    0
+ 
+// Create variant, and initialize with a pointer to our IUnknown.
+VARIANTARG var;
+ 
+V_VT(&var)      = VT_UNKNOWN;
+V_UNKNOWN(&var) = (IUnknown*)this;
+ 
+// Execute IOleCommandTarget with command group and ID.
+m_pCmdTarg->Exec(&CGID_DocHostCmdPriv, DOCHOST_DOCCANNAVIGATE, 0L, &var, NULL);
+
+
+// At 300dpi, 4" by 6" is 1200 by 1800 pixels 
+
+
+HBITMAP CopyBitmap( HBITMAP hbm) {
+    HDC hdcSrc = CreateCompatibleDC(NULL);
+    HDC hdcDst = CreateCompatibleDC(NULL);
+    HBITMAP hbmOld, hbmOld2, hbmNew;
+    BITMAP bm;
+    GetObject(hbm, sizeof(bm), &bm);
+    hbmOld = SelectObject(hdcSrc, hbm);
+    hbmNew = CreateBitmap( bm.bmWidth, bm.bmHeight, bm.bmPlanes,
+bm.bmBitsPixel,NULL);
+    hbmOld2 = SelectObject(hdcDst, hbmNew);
+    BitBlt(hdcDst, 0, 0, bm.bmWidth, bm.bmHeight, hdcSrc, 0, 0, SRCCOPY);
+    SelectObject(hdcSrc, hbmOld);
+    DeleteDC(hdcSrc);
+    DeleteDC(hdcDst);
+    return hbmNew;
+}
+
+destX = ... (upper-left corner of destination location to copy a tile to)
+destY = ... (upper-left corner of destination location to copy a tile to)
+
+BYTE *pCurSrcRow = srcBitmapData.Scan0;
+BYTE *pCurDestRow = destBitmapData.Scan0 + (destBitmapData.Stride * destY) +
+(destX * 3);
+
+for (curRow = 0; curRow < srcbitmap.Height(); curRow++)
+{
+memcpy(pCurDestRow, pCurSrcRow, srcbitmap.Height() * 3)
+
+pCurSrcRow += srcBitmapData.Stride;
+pCurSrcRow += destBitmapData.Stride;
+}
+
+
+// get HBITMAP
+HBITMAP hBitmap;
+m_vImgFrames[0]->GetHBITMAP( Gdiplus::Color(), &hBitmap );
+// get bits and additional info
+BITMAP bmp = {};
+::GetObject( hBitmap, sizeof(bmp), &bmp );
+// prepare BITMAPINFO
+BITMAPINFO bminfo = {};
+bminfo.bmiHeader.biSize = sizeof( BITMAPINFO );
+bminfo.bmiHeader.biWidth = bmp.bmWidth;
+bminfo.bmiHeader.biHeight = bmp.bmHeight;
+bminfo.bmiHeader.biBitCount = bmp.bmBitsPixel;
+bminfo.bmiHeader.biCompression = BI_RGB;
+bminfo.bmiHeader.biPlanes = bmp.bmPlanes;
+bminfo.bmiHeader.biSizeImage = bmp.bmWidthBytes*bmp.bmHeight*4; // 4 stands for 32bpp
+// select stretch mode
+::SetStretchBltMode( HALFTONE );
+// draw
+::StretchDIBits( hDC, 0, 0, new_cx, new_cy, 0, 0,
+  m_vImgFrames[0]->GetWidth(), m_vImgFrames[0]->GetHeight(), 
+  bmp.bmBits, &bminfo, DIB_RGB_COLORS, SRCCOPY );
+  
+  
+  #pragma once
+ #ifndef _RICH_TEXT__H_
+#define _RICH_TEXT__H_
+ 
+#include <Windows.h>
+#include <objidl.h>
+#include <Gdiplus.h>
+#include <string>
+#include "Exception.h"
+ 
+#define INVALID_SIZE -1.0
+ 
+class RichText
+{
+private:
+        Gdiplus::PrivateFontCollection* privateFontCollection;
+        Gdiplus::SolidBrush* solidBrush;
+        Gdiplus::Font* font;
+        Gdiplus::RectF rect;
+        std::wstring text;
+ 
+public:
+        RichText() : privateFontCollection(nullptr), solidBrush(nullptr), font(nullptr), text(L"")
+        {
+                ZeroMemory(&this->rect, sizeof(Gdiplus::RectF));
+        }
+ 
+        RichText(std::wstring text, std::wstring path, Gdiplus::REAL size, Gdiplus::Color color)
+                : privateFontCollection(new Gdiplus::PrivateFontCollection()), solidBrush(new Gdiplus::SolidBrush(color)),
+                  font(nullptr), text(text), rect(Gdiplus::RectF(0.0, 0.0, INVALID_SIZE, INVALID_SIZE))
+        {
+                Gdiplus::FontFamily fontFamily;
+                WCHAR familyName[LF_FACESIZE];
+                INT num;
+                privateFontCollection->AddFontFile(path.c_str());
+                privateFontCollection->GetFamilies(1, &fontFamily, &num);
+                fontFamily.GetFamilyName(familyName);
+                if(fontFamily.IsStyleAvailable(Gdiplus::FontStyleRegular))
+                {
+                        this->font = new Gdiplus::Font(familyName, size, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel, privateFontCollection);
+                }
+        }
+ 
+        RichText(const RichText& object) : privateFontCollection(new Gdiplus::PrivateFontCollection()),
+                solidBrush(static_cast<Gdiplus::SolidBrush*>(object.solidBrush->Clone())), text(object.text),
+                rect(object.rect)
+        {
+                this->font = object.font->Clone();
+        }
+ 
+        ~RichText()
+        {
+                delete this->font;
+                delete this->solidBrush;
+                delete this->privateFontCollection;
+        }
+ 
+        std::wstring& Text()
+        {
+                return this->text;
+        }
+ 
+        const Gdiplus::Font* Font() const
+        {
+                return this->font;
+        }
+ 
+        Gdiplus::RectF& RectF()
+        {
+                return this->rect;
+        }
+ 
+        Gdiplus::SolidBrush* SolidBrush() const
+        {
+                return this->solidBrush;
+        }
+ 
+        Gdiplus::Status Measure(Gdiplus::Graphics& graphics)
+        {
+                Gdiplus::PointF layoutRect(0.0, 0.0);
+                Gdiplus::RectF boundRect;
+                Gdiplus::Status status = graphics.MeasureString(this->text.c_str(), -1, this->font, layoutRect, &boundRect);
+                this->rect.Width  = boundRect.Width;
+                this->rect.Height = boundRect.Height;
+                return status;
+        }
+ 
+        Gdiplus::Status Draw(Gdiplus::Graphics& graphics) const
+        {
+                return graphics.DrawString(this->text.c_str(), -1, this->font, Gdiplus::PointF(this->rect.X, this->rect.Y), this->solidBrush);
+        }
+};
+ 
+#endif // _RICH_TEXT__H_
+
+
+
+ccDIB dib;
+        dib.init(*saveThisBuff);
+	dib.write("d:\\share\\vgcblobsorterERunTest.bmp");
+	Bitmap *myBitmap = new Bitmap(L"d:\\share\\vgcblobsorterERunTest.bmp", false);
+	Graphics *g = Graphics::FromImage(myBitmap);
+	SolidBrush *myBrush = new SolidBrush(Color::Black);
+	
+
+	
+	CString cstrLabel;
+	cstrLabel.Format("%s  *** HTI CONFIDENTIAL ***  %s  %s", m_cstrMachineId, m_cstrMONumber, m_cstrPartNumber);
+	cstrLabel.GetBuffer();
+
+
+	LPWSTR wCharLabel = new WCHAR[255];
+	LPTSTR lpStr = cstrLabel.GetBuffer(cstrLabel.GetLength());
+	int nLen = MultiByteToWideChar(CP_ACP, 0, lpStr, -1, NULL, NULL);
+	MultiByteToWideChar(CP_ACP, 0, lpStr, -1, wCharLabel, nLen); 
+	int widthX = (int)saveThisBuff->width()/2-200;
+	int heightY= (int)saveThisBuff->height()-15;
+	PointF *startPoint = new PointF(widthX, heightY);
+	Font* thisFont; 
+	thisFont = new Font(&FontFamily(L"Times New Roman"), 24);
+	StringFormat stringFormat;
+	stringFormat.SetAlignment(StringAlignmentCenter);
+	
+	g->DrawString(wCharLabel, nLen, thisFont, startPoint, stringFormat, myBrush); //error here
+/////////////////////////////////////////////////////
+
+         Gdiplus::Font font( FontName.c_str( ), FontSize, FontStyle, Gdiplus::UnitPixel );
+         Gdiplus::TextRenderingHint hint = AntiAliased ? Gdiplus::TextRenderingHintAntiAlias : Gdiplus::TextRenderingHintSystemDefault;
+         int                    tempSize = static_cast<int>( FontSize * 2 );
+            
+              charGraphics.SetPageUnit( Gdiplus::UnitPixel );
+            charGraphics.SetTextRenderingHint( hint );
+        
+            MeasureChars( font, charGraphics );
+///////////////////////////////////////////////
+
+#if 0
+
+	PrivateFontCollection _fonts ;
+	_fonts.AddFontFile(fontFilename) ;
+	Font * currentFont = new Font(fontName, fontSize, FontStyleRegular, UnitPoint, &_fonts) ;
+
+	std::wstring text = L"Sara's Big Time" ;
+	graphics->DrawString(text.c_str(), (INT)text.size(), currentFont, rectangle, &format, &brush) ;
+
+
+	//Font* font = new Font(L"Times New Roman", 60);
+	//Font* font = new Font(L"Times New Roman", 20, FontStyle::Regular);
+
+	// HatchBrush example
+	//Brush* brush = new HatchBrush(HatchStyle::Cross,Color::White, Color::Blue);
+	SolidBrush brush(Color(255,255,255));
+	// LinearGradientBrush example
+	//RectangleF* rect = new RectangleF(PointF(0, 0), textSize);
+	//brush = new LinearGradientBrush(*rect,
+	//	Color::Black,
+	//	Color::Blue,
+	//	LinearGradientMode::
+	//	ForwardDiagonal);
+	CString szFile;
+	m_edtFile.GetWindowText(szFile);
+	Gdiplus::Status nResults = m_fontcollection.AddFontFile(szFile);
+	FontFamily fontFamily;
+	int nNumFound=0;
+	Gdiplus::PrivateFontCollection m_fontcollection;
+	m_fontcollection.GetFamilies(1,&fontFamily,&nNumFound);
+	if (nNumFound <=0)
+		return;
+
+    Gdiplus::Font font(&fontFamily,30,FontStyleRegular,UnitPixel);
+
+	StringFormat strformat;
+	strformat.SetAlignment(StringAlignmentCenter);
+
+	RectF therect; 
+	therect.Height = 150; 
+	therect.Width  = 130;
+	therect.X      = 200; 
+	therect.Y      = 100; 
+
+	graphics->SetTextRenderingHint(TextRenderingHintSingleBitPerPixelGridFit); //method to specify 
+	Gdiplus::Status st = graphics->DrawString(text,wcslen(text),&font,therect,&strformat,&brush);
+
+	//graphics->DrawString(text,
+	//	font,
+	//	brush,
+	//	(picText->Width  - textSize.Width)  / 2,
+	//	(picText->Height - textSize.Height) / 2);
+#endif          
