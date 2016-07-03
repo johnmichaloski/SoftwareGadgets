@@ -2,7 +2,7 @@
 #Word 2 Markdown README 
 ----
 
-7/3/2016 1:39:21 PM
+7/3/2016 1:54:23 PM
 This document describes the procedure to convert Microsoft Word documents into Markdown documents. There are many variants of markdown, but it is a rather limited set. 
 #Instructions
 The code is a C# application. Follow these instructions to generate a readme.md and images folder.
@@ -16,48 +16,48 @@ The Github web site uses markdown as its readme format to describe a repository.
 Below are the conversion mappings from Microsoft Word document  into some flavor (generally github) markdown.
 <TABLE>
 <TR>
-<TD>Word <BR></TD>
-<TD>Markdown<BR></TD>
+<TD>Word <BR></TD>
+<TD>Markdown<BR></TD>
 </TR>
 <TR>
-<TD>Heading 1, Heading 2, … styles<BR></TD>
-<TD>Corresponding number of #<BR></TD>
+<TD>Heading 1, Heading 2, … styles<BR></TD>
+<TD>Corresponding number of #<BR></TD>
 </TR>
 <TR>
-<TD>Image<BR></TD>
-<TD>Save image into images/image#.jpg<BR>Insert markdown:<BR>![Figure #](./images/image#.jpg?raw=true)<BR></TD>
+<TD>Image<BR></TD>
+<TD>Save image into images/image#.jpg<BR>Insert markdown:<BR>![Figure #](./images/image#.jpg?raw=true)<BR></TD>
 </TR>
 <TR>
-<TD>Bold Font<BR></TD>
-<TD>**text**<BR></TD>
+<TD>Bold Font<BR></TD>
+<TD>**text**<BR></TD>
 </TR>
 <TR>
-<TD>Underline Font<BR></TD>
-<TD>_ text _<BR></TD>
+<TD>Underline Font<BR></TD>
+<TD>_ text _<BR></TD>
 </TR>
 <TR>
-<TD>Code Style<BR></TD>
-<TD>\t code line1<BR>\t code line2<BR></TD>
+<TD>Code Style<BR></TD>
+<TD>\t code line1<BR>\t code line2<BR></TD>
 </TR>
 <TR>
-<TD>Table<BR></TD>
-<TD>Unclear, just used html to represent table,<BR>Remaining problems with paragraph count using table<BR>Github:<BR>First Header | Second Header<BR>------------ | -------------<BR>Content from cell 1 | Content from cell 2<BR>Content in the first column | Content in the second column<BR></TD>
+<TD>Table<BR></TD>
+<TD>Unclear, just used html to represent table,<BR>Remaining problems with paragraph count using table<BR>Github:<BR>First Header | Second Header<BR>------------ | -------------<BR>Content from cell 1 | Content from cell 2<BR>Content in the first column | Content in the second column<BR></TD>
 </TR>
 <TR>
-<TD>List<BR></TD>
-<TD>Unordered (bullet) -  *<BR>Numbered – #. Etc.<BR></TD>
+<TD>List<BR></TD>
+<TD>Unordered (bullet) -  *<BR>Numbered – #. Etc.<BR></TD>
 </TR>
 <TR>
-<TD>Hyperlink <BR></TD>
-<TD>Hyperlink![Text](URL)<BR>e.g., http://github.com - automatic!<BR>[GitHub](http://github.com)<BR></TD>
+<TD>Hyperlink <BR></TD>
+<TD>Hyperlink![Text](URL)<BR>e.g., http://github.com - automatic!<BR>[GitHub](http://github.com)<BR></TD>
 </TR>
 <TR>
-<TD>Task Lists<BR></TD>
-<TD>Unhandled, should be:<BR>- [x] @mentions, #refs, [links](), **formatting**, and <del>tags</del> supported<BR>- [x] list syntax required (any unordered or ordered list supported)<BR>- [x] this is a complete item<BR>- [ ] this is an incomplete item<BR></TD>
+<TD>Task Lists<BR></TD>
+<TD>Unhandled, should be:<BR>- [x] @mentions, #refs, [links](), **formatting**, and <del>tags</del> supported<BR>- [x] list syntax required (any unordered or ordered list supported)<BR>- [x] this is a complete item<BR>- [ ] this is an incomplete item<BR></TD>
 </TR>
 <TR>
-<TD>Strikethrough<BR><BR><BR></TD>
-<TD>Unhandled, should be:<BR>~~this~~  - this appears crossed out.<BR></TD>
+<TD>Strikethrough<BR><BR><BR></TD>
+<TD>Unhandled, should be:<BR>~~this~~  - this appears crossed out.<BR></TD>
 </TR>
 </TABLE>
 
@@ -111,4 +111,8 @@ Looks at each word in a paragraph and formats font if word is bold or underlined
 Pops dialog to retrieve word file to convert. Saves images, all image and table ranges, and then processes each paragraph. If image or table, handles. Tables are currently handled as HTML. If other style, mapping is performed. Output is streamed to Readme.md in the same folder as the oringal work file. 
 **_SaveClipboardImage(System.String)_**
 Saves the clipboard into the given filename as a jpg. Uses System.Drawing.Image 
+#Caveats
+ 1. Tables end with \a to signal end of cell, row, table. This character does not map well in Markdown. 
+ 2. If the backup readme.docx file is already open, the program will fail. Please close the file. There is a message box to inform you of this problem.
+ 3. The header row should be bold if you want to improve readability of word and to distinguish header from rest of table. 
 
