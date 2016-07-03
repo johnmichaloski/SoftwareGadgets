@@ -282,7 +282,15 @@ namespace Word2Markdown
 
             //oWordDoc = oWord.Documents.Open(filename);
             //MakeCopy("Readme.docx");
-            File.Copy(filename, foldername + "Readme.docx",true);
+            try
+            {
+                File.Copy(filename, foldername + "Readme.docx", true);
+            } 
+            catch(Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Backup copy failed - Please close the backup Readme.docx file. Thank you.");
+                return;
+            }
             filename = foldername + "Readme.docx";
             oWordDoc = oWord.Documents.Open(filename);
 
@@ -304,6 +312,7 @@ namespace Word2Markdown
                 string tabletext = InTable(oWordDoc.Paragraphs[i], ref  tablerange );
                 if (tabletext != "")
                 {
+                    tabletext=tabletext.Replace("\a", "");
                     totaltext += tabletext;
 					Range r = oWordDoc.Paragraphs[i].Range;
 					while(i < oWordDoc.Paragraphs.Count &&  oWordDoc.Paragraphs[i+1].Range.Start < tablerange.End ) 
@@ -376,8 +385,10 @@ namespace Word2Markdown
             }
             sw.Write(totaltext);
             sw.Close();
-            System.Windows.Forms.Clipboard.SetText(" ");
-            oWordDoc.Close();
+            //  You placed a large amount of content on the clipboard HEADACHE...
+            System.Windows.Forms.Clipboard.SetText("  ");
+            //oWord.Application.DisplayAlerts =  WdAlertLevel.wdAlertsNone ;  // Doesn't work
+            oWordDoc.Close(WdSaveOptions.wdDoNotSaveChanges);
             oWord.Quit();
         }
         /// <summary>

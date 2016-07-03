@@ -2,7 +2,7 @@
 #Word 2 Markdown README 
 ----
 
-7/3/2016 1:54:23 PM
+7/3/2016 2:15:18 PM
 This document describes the procedure to convert Microsoft Word documents into Markdown documents. There are many variants of markdown, but it is a rather limited set. 
 #Instructions
 The code is a C# application. Follow these instructions to generate a readme.md and images folder.
@@ -112,7 +112,9 @@ Pops dialog to retrieve word file to convert. Saves images, all image and table 
 **_SaveClipboardImage(System.String)_**
 Saves the clipboard into the given filename as a jpg. Uses System.Drawing.Image 
 #Caveats
- 1. Tables end with \a to signal end of cell, row, table. This character does not map well in Markdown. 
- 2. If the backup readme.docx file is already open, the program will fail. Please close the file. There is a message box to inform you of this problem.
- 3. The header row should be bold if you want to improve readability of word and to distinguish header from rest of table. 
+ 1. Conversion is a bit slow. 
+ 2. Tables end with \a to signal end of cell, row, table. This character does not map well in Markdown. 
+ 3. If the backup readme.docx file is already open, the program will fail. Please close the file. There is a message box to inform you of this problem.
+ 4. The header row should be bold if you want to improve readability of word and to distinguish header from rest of table.  Fixme, still doesn’t work.
+ 5. Big problem that I couldn’t solve, dialog when closing word “You placed a large amount of content on the clipboard”. Total HEADACHE... reset clipboard to 2 characters, disable alerts, none worked.
 
