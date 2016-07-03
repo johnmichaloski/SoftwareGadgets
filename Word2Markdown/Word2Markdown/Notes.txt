@@ -1,0 +1,12 @@
+﻿
+Improved Conversion
+-------------------
+Maybe better to make copy of docx into Readme.docx
+Align left, no spacing?
+Code block - tab each paragraph
+Handle table markers before - insert characters?
+Change lists into normal with markdown
+	add - to beginnin of list
+Insert figure string before figure
+Save figure in images/figure#
+Save copy as text file
