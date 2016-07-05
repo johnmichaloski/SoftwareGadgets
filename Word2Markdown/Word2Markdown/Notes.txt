@@ -10,3 +10,19 @@ Change lists into normal with markdown
 Insert figure string before figure
 Save figure in images/figure#
 Save copy as text file
+
+
+
+                        // Multiple lines in table cell
+                        if (words.Count() > 2)
+                        {
+                            currLine = currLine.Replace("\r", "<BR>");
+                            i = i + words.Count() - 3;
+                        }
+
+ Set rangeWord = ActiveDocument.Range(Start:=0, End:=0)
+    ActiveDocument.TablesOfContents.Add rangeWord, _
+                                    UseFields:=True, _
+                                    UseHeadingStyles:=True, _
+                                    LowerHeadingLevel:=3, _
+                                    UpperHeadingLevel:=1

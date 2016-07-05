@@ -261,6 +261,17 @@ namespace Word2Markdown
             text += trailing;
             return text;
         }
+
+        public void DeleteTableOfContents()
+        {
+            int i = 0;
+            foreach (TableOfContents toc in oWordDoc.TablesOfContents)
+            {
+                //if(++i==1)
+                //    toc.Range.InsertBefore("* auto-gen TOC:\r\n {:toc}");
+                toc.Delete();
+            }
+        }
         /// <summary>
         ///     Pops dialog to retrieve word file to convert. Saves images, all image and table ranges, and
         /// then processes each paragraph. If image or table, handles. Tables are currently handled as HTML.
@@ -299,9 +310,14 @@ namespace Word2Markdown
             //MAKING THE APPLICATION VISIBLE
             oWord.Visible = true;
 
+            ReplaceSmartQuotes();
             SaveAllImages("");
             GetTableRanges();
             GetImageRanges();
+            DeleteTableOfContents(); // generally doesnt make sense without page numbering
+
+            //In githug markdown, any URL (like http://www.github.com/) will be automatically converted into a clickable link
+            //ConvertHyperlinks();
 
             for (int i = 1; i <= oWordDoc.Paragraphs.Count; i++)
             {
@@ -331,14 +347,13 @@ namespace Word2Markdown
                 // Now check for style if here
                 Style style = oWordDoc.Paragraphs[i].get_Style();
                 string line = oWordDoc.Paragraphs[i].Range.Text.ToString();
-                System.Diagnostics.Debug.WriteLine(line);
-                //if (line == "Uninstall")
-                //{
-                //    System.Diagnostics.Debugger.Break();
-                //}
+                //System.Diagnostics.Debug.WriteLine(line);
+
                 if (Array.IndexOf(TitleStyle, style.NameLocal) >= 0)
                 {
                     totaltext += "\r\n#" + oWordDoc.Paragraphs[i].Range.Text.ToString() + " \r\n----\r\n";
+                    // http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown
+                    //totaltext+="* auto-gen TOC:\r\n{:toc}";  // no longer used by github
                 }
                 else if (Array.IndexOf(Heading1, style.NameLocal) >= 0)
                 {
@@ -390,6 +405,7 @@ namespace Word2Markdown
             //oWord.Application.DisplayAlerts =  WdAlertLevel.wdAlertsNone ;  // Doesn't work
             oWordDoc.Close(WdSaveOptions.wdDoNotSaveChanges);
             oWord.Quit();
+            System.Windows.Forms.MessageBox.Show("Done!");
         }
         /// <summary>
         ///     Saves the clipboard into the given filename as a jpg.  Uses System.Drawing.Image
@@ -455,7 +471,7 @@ namespace Word2Markdown
                 if (link.TextToDisplay.Count() < 1)
                     link.Range.InsertBefore(link.Address);
                 else
-                    link.Range.InsertBefore("[" + link.Address + " " + link.TextToDisplay + "]");
+                    link.Range.InsertBefore("![" + link.Address + " " + link.TextToDisplay + "](" + link.Address + ")");
             }
             while (oWordDoc.Hyperlinks.Count > 0)
             {
