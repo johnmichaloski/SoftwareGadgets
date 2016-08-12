@@ -64,6 +64,34 @@ namespace Word2Markdown
             }
         }
         /// <summary>
+        ///     Converts drawing canvases to inline drawings using cut and paste special.
+        /// </summary>
+        public void ConvertShapesToInline()
+        {
+            object missing = System.Reflection.Missing.Value;
+            //Sadly this doesn't work with Word 2016, probable mismatch of word interop reference versions
+            // Works with VS 2010 C# and Word 2010... word interop reference version 14.0.0.
+            // http://forums.asp.net/t/1912406.aspx?How+to+use+two+versions+of+MS+Office+Interop+Assemblies+in+a+C+Application+
+            // Ended up going thru document cutting drawing, and pasting special as enhanced metafile... :(
+            Microsoft.Office.Interop.Word.Shapes allshapes = oWordDoc.Shapes;
+            for (int i = allshapes.Count-1; i >=0; i--)
+            {
+                // Because MS COM numbering is 1..n, not 0..n-1 
+                Shape s = allshapes[i+1];
+                s.Select();
+                Range r = oWord.Selection.Range;
+                //System.Diagnostics.Debug.Print("Range =[" + Convert.ToString(r.Start) + Convert.ToString(r.End) + "]");
+                r.Cut();
+                object objDataTypeMetafile = Microsoft.Office.Interop.Word.WdPasteDataType.wdPasteEnhancedMetafile;
+                object objPlacement = Microsoft.Office.Interop.Word.WdOLEPlacement.wdInLine;
+                r.PasteSpecial(ref missing, ref missing,
+                    ref objPlacement, ref missing, ref objDataTypeMetafile,
+                    ref missing, ref missing);
+            }
+            //number = oWordDoc.InlineShapes.Count;
+            //System.Windows.Forms.MessageBox.Show(number.ToString()); // 0 to begin with
+        }
+        /// <summary>
         ///     Extracts all the image ranges into the ImageRanges data structure .
         /// </summary>
         public void GetImageRanges()
@@ -89,8 +117,7 @@ namespace Word2Markdown
         {
             int nimages = 1;
             System.IO.Directory.CreateDirectory(foldername + "images");
-
-            // Save all images as 
+            // Save all images as jpg
             foreach (InlineShape shape in oWordDoc.InlineShapes)
             {
 
@@ -104,6 +131,13 @@ namespace Word2Markdown
                 else if (shape.Type == WdInlineShapeType.wdInlineShapeLinkedPicture)
                 {
                     System.Diagnostics.Debug.WriteLine(shape.Range.Text);
+                    shape.Select();
+                    oWord.Selection.CopyAsPicture();
+                    SaveClipboardImage(foldername + "images\\image" + nimages.ToString() + ".jpg");
+                    nimages++;
+                }
+                else
+                {
                     shape.Select();
                     oWord.Selection.CopyAsPicture();
                     SaveClipboardImage(foldername + "images\\image" + nimages.ToString() + ".jpg");
@@ -132,7 +166,11 @@ namespace Word2Markdown
             }
             if (bInImage)
             {
-                totaltext = "![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)";
+                // Unclear if figure on new line is appropriate - but in general better than not.
+                // Doesn't work totaltext = "\n\n<p align=\"center\"> ![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n</p>\n";
+                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n";
+                totaltext = "\n<CENTER>\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n</CENTER>\n";
+                // FIXME: next line should be centered if figure.
             }
             return totaltext;
         }
@@ -264,7 +302,6 @@ namespace Word2Markdown
 
         public void DeleteTableOfContents()
         {
-            int i = 0;
             foreach (TableOfContents toc in oWordDoc.TablesOfContents)
             {
                 //if(++i==1)
@@ -297,7 +334,7 @@ namespace Word2Markdown
             {
                 File.Copy(filename, foldername + "Readme.docx", true);
             } 
-            catch(Exception e)
+            catch(Exception )
             {
                 System.Windows.Forms.MessageBox.Show("Backup copy failed - Please close the backup Readme.docx file. Thank you.");
                 return;
@@ -309,16 +346,18 @@ namespace Word2Markdown
 
             //MAKING THE APPLICATION VISIBLE
             oWord.Visible = true;
+            //oWord.Visible = false; // really don't want to mess around with word doc
 
             ReplaceSmartQuotes();
+            ConvertShapesToInline();
+            GetImageRanges();
             SaveAllImages("");
             GetTableRanges();
-            GetImageRanges();
             DeleteTableOfContents(); // generally doesnt make sense without page numbering
 
             //In githug markdown, any URL (like http://www.github.com/) will be automatically converted into a clickable link
             //ConvertHyperlinks();
-
+            bool bInCode=false;
             for (int i = 1; i <= oWordDoc.Paragraphs.Count; i++)
             {
                 Words(oWordDoc.Paragraphs[i]);
@@ -357,30 +396,38 @@ namespace Word2Markdown
                 }
                 else if (Array.IndexOf(Heading1, style.NameLocal) >= 0)
                 {
-                    totaltext += "\r\n#" + line;
+                    if(!String.IsNullOrEmpty(line.Trim()))
+                      totaltext += "\r\n#" + line;
                 }
                 else if (Array.IndexOf(Heading2, style.NameLocal) >= 0)
                 {
-                    totaltext += "\r\n##" + line;
+                    if (!String.IsNullOrEmpty(line.Trim()))
+                        totaltext += "\r\n##" + line;
                 }
                 else if (Array.IndexOf(Heading3, style.NameLocal) >= 0)
                 {
-                    totaltext += "\r\n###" + line;
+                    if (!String.IsNullOrEmpty(line.Trim()))
+                        totaltext += "\r\n###" + line;
                 }
                 else if (Array.IndexOf(CodeStyle, style.NameLocal) >= 0)
                 {
-                    totaltext += "\r\n\t" + line;
+                    if (!bInCode)
+                        totaltext += "\n";
+                    bInCode = true;
+                    totaltext += "\n\t" + line;
+                    continue;
                 }
                 else if (Array.IndexOf(ListStyle, style.NameLocal) >= 0)
                 {
                     totaltext += "\r\n ";
+                    line = line.TrimStart();
                     Range r = oWordDoc.Paragraphs[i].Range;
                     if (r.ListFormat.ListType == WdListType.wdListBullet ||
                         r.ListFormat.ListType == WdListType.wdListPictureBullet)
                     {
                         for (int k = 1; k < r.ListFormat.ListLevelNumber; k++)
                             totaltext += "\t";
-                        totaltext += "*";
+                        totaltext += "- ";                    
                     }
                     else if (r.ListFormat.ListType == WdListType.wdListNoNumbering)
                     {
@@ -395,9 +442,20 @@ namespace Word2Markdown
                 }
                 else
                 {
-                    totaltext += "\r\n" + Words(oWordDoc.Paragraphs[i]);
+                    // Fixme: handle style - center, left, justified, right
+                    ParagraphFormat pf = oWordDoc.Paragraphs[i].Format;
+                    if (pf.Alignment == WdParagraphAlignment.wdAlignParagraphCenter)
+                    {
+                        totaltext += "\r\n<p align=\"center\">\n" + Words(oWordDoc.Paragraphs[i])+ "\n</p>";
+                    }
+                    else
+                    {
+                        totaltext += "\r\n" + Words(oWordDoc.Paragraphs[i]);
+                    }
                 }
+                bInCode = false;
             }
+            totaltext += "\nAutogenerated from Microsoft Word by [Word2Markdown](https://github.com/johnmichaloski/SoftwareGadgets/tree/master/Word2Markdown)";
             sw.Write(totaltext);
             sw.Close();
             //  You placed a large amount of content on the clipboard HEADACHE...
