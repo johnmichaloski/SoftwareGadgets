@@ -1,4 +1,7 @@
 ﻿
+
+oWordApplic.Selection.Font.Subscript 
+
 Improved Conversion
 -------------------
 Maybe better to make copy of docx into Readme.docx

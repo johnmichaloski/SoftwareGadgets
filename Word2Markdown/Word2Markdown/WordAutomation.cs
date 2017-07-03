@@ -50,10 +50,16 @@ namespace Word2Markdown
         ///     Foldername of the current word file undergoing conversion.
         /// </summary>
         public string foldername;
-
-
         /// <summary>
-        ///     Extracts all the table ranges into the TablesRanges data structure .
+        ///     File title of current word file undergoing conversion. Useful for differentiating images.
+        /// </summary>
+        public string filetitle;
+        /// <summary>
+        ///     File title of current word file undergoing conversion. Useful for differentiating images.
+        /// </summary>
+        public string filecopy;
+        /// <summary>
+        ///     Copied filename of the current word file undergoing conversione.
         /// </summary>
         public void GetTableRanges()
         {
@@ -63,6 +69,80 @@ namespace Word2Markdown
                 TablesRanges.Add(TRange);
             }
         }
+
+        private string ExePath()
+        {
+            string path = System.IO.Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetAssembly(typeof(WordAutomation)).CodeBase).LocalPath);
+            // THis returns a file:// URI :(  File.Copy DOES not like.
+            //path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            return path;
+        }
+
+        private void FindAllSubscripts()
+        {
+            object missing = System.Reflection.Missing.Value;
+            object istrue = true;
+            oWordDoc.Select();
+            oWordDoc.Range().WholeStory();
+            string before, after;
+            for (int j = 0; j < 2; j++)
+            {
+                Range r = oWordDoc.Range();
+                r.Find.ClearFormatting();
+                r.Find.Replacement.ClearFormatting();
+                if (j == 0)
+                {
+                    r.Find.Font.Subscript = 1;
+                    before = "<sub>"; after = "</sub>";
+                }
+                else
+                {
+                    r.Find.Font.Superscript = 1;
+                    before = "<sup>"; after = "</sup>";
+                }
+                r.Find.Text = "";
+                r.Find.Forward = true;
+                r.Find.Wrap = WdFindWrap.wdFindStop; // wdFindStop
+                r.Find.Format = true;
+                r.Find.MatchCase = false;
+                r.Find.MatchWholeWord = false;
+                r.Find.MatchWildcards = false;
+                r.Find.MatchSoundsLike = false;
+                r.Find.MatchAllWordForms = false;
+                r.Find.Execute(ref missing, ref missing, ref missing,
+                       ref missing, ref missing, ref missing, ref missing,
+                       ref missing, ref missing, ref missing, ref missing,
+                       ref missing, ref missing, ref missing, ref missing);
+                bool bFlag = true;
+                while (r.Find.Found && bFlag)
+                {
+                    System.Diagnostics.Debug.Print("Range =[" + Convert.ToString(r.Start) + "," + Convert.ToString(r.End) + "]");
+
+                    try
+                    {
+                        Range rend = oWordDoc.Range(r.End, r.End);
+                        rend.InsertAfter(after);
+                        Range rend1 = oWordDoc.Range(r.End, r.End + after.Length + 1);
+                        rend1.Font.Superscript = 0;
+                        rend1.Font.Subscript = 0;
+
+                        Range rstart = oWordDoc.Range(r.Start, r.Start);
+                        rstart.InsertBefore(before);
+
+                        // reset find after <> added
+                        r.Start = r.End + after.Length + 1;
+
+                        r.Find.Execute(ref missing, ref missing, ref missing,
+                                       ref missing, ref missing, ref missing, ref missing,
+                                       ref missing, ref istrue, ref missing, ref missing,
+                                       ref missing, ref missing, ref missing, ref missing);
+                    }
+                    catch { bFlag = false; }
+
+                }
+            }
+        }
+
         /// <summary>
         ///     Converts drawing canvases to inline drawings using cut and paste special.
         /// </summary>
@@ -111,13 +191,13 @@ namespace Word2Markdown
         }
         /// <summary>
         ///     Saves all the image ranges into the folder images under the current filename folder.
-        ///     Uses clipboard to copy and paste into image handler, which saves AS JPG.
+        ///     Uses clipboard to copy and paste into image handler, which saves AS gif.
         /// </summary>
         public void SaveAllImages(string directory)
         {
             int nimages = 1;
             System.IO.Directory.CreateDirectory(foldername + "images");
-            // Save all images as jpg
+            // Save all images as gif
             foreach (InlineShape shape in oWordDoc.InlineShapes)
             {
 
@@ -125,7 +205,7 @@ namespace Word2Markdown
                 {
                     shape.Select();
                     oWord.Selection.CopyAsPicture();
-                    SaveClipboardImage(foldername + "images\\image" + nimages.ToString() + ".jpg");
+                    SaveClipboardImage(foldername + "images\\" +filetitle+ "_image" + nimages.ToString() + ".gif");
                     nimages++;
                 }
                 else if (shape.Type == WdInlineShapeType.wdInlineShapeLinkedPicture)
@@ -133,14 +213,14 @@ namespace Word2Markdown
                     System.Diagnostics.Debug.WriteLine(shape.Range.Text);
                     shape.Select();
                     oWord.Selection.CopyAsPicture();
-                    SaveClipboardImage(foldername + "images\\image" + nimages.ToString() + ".jpg");
+                    SaveClipboardImage(foldername + "images\\" + filetitle + "_image" + nimages.ToString() + ".gif");
                     nimages++;
                 }
                 else
                 {
                     shape.Select();
                     oWord.Selection.CopyAsPicture();
-                    SaveClipboardImage(foldername + "images\\image" + nimages.ToString() + ".jpg");
+                    SaveClipboardImage(foldername + "images\\" + filetitle + "_image" + nimages.ToString() + ".gif");
                     nimages++;
                 }
             }
@@ -167,9 +247,10 @@ namespace Word2Markdown
             if (bInImage)
             {
                 // Unclear if figure on new line is appropriate - but in general better than not.
-                // Doesn't work totaltext = "\n\n<p align=\"center\"> ![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n</p>\n";
-                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n";
-                totaltext = "\n<CENTER>\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".jpg?raw=true)\n</CENTER>\n";
+                // Doesn't work totaltext = "\n\n<p align=\"center\"> ![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n</p>\n";
+                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n";
+                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n\n";
+                totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/"+ filetitle+ "_image" + iCounter.ToString() + ".gif)\n\n";
                 // FIXME: next line should be centered if figure.
             }
             return totaltext;
@@ -325,6 +406,7 @@ namespace Word2Markdown
             if (result == System.Windows.Forms.DialogResult.Cancel)
                 return;
             filename = fileDialog.FileName;
+            filetitle = Path.GetFileNameWithoutExtension(filename); 
             foldername = Path.GetDirectoryName(filename) + "\\";
             oWord = new Microsoft.Office.Interop.Word.Application();
 
@@ -332,7 +414,8 @@ namespace Word2Markdown
             //MakeCopy("Readme.docx");
             try
             {
-                File.Copy(filename, foldername + "Readme.docx", true);
+                filecopy= foldername + "Readme.docx";
+                File.Copy(filename, filecopy, true);
             } 
             catch(Exception )
             {
@@ -341,7 +424,7 @@ namespace Word2Markdown
             }
             filename = foldername + "Readme.docx";
             oWordDoc = oWord.Documents.Open(filename);
-
+            FindAllSubscripts();
             StreamWriter sw = new StreamWriter(foldername + "Readme.md");
 
             //MAKING THE APPLICATION VISIBLE
@@ -349,7 +432,7 @@ namespace Word2Markdown
             //oWord.Visible = false; // really don't want to mess around with word doc
 
             ReplaceSmartQuotes();
-            ConvertShapesToInline();
+            //ConvertShapesToInline(); // Word 2010 versus 2016 issue
             GetImageRanges();
             SaveAllImages("");
             GetTableRanges();
@@ -390,24 +473,24 @@ namespace Word2Markdown
 
                 if (Array.IndexOf(TitleStyle, style.NameLocal) >= 0)
                 {
-                    totaltext += "\r\n#" + oWordDoc.Paragraphs[i].Range.Text.ToString() + " \r\n----\r\n";
+                    totaltext += "\r\n# " + oWordDoc.Paragraphs[i].Range.Text.ToString() + " \r\n----\r\n";
                     // http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown
                     //totaltext+="* auto-gen TOC:\r\n{:toc}";  // no longer used by github
                 }
                 else if (Array.IndexOf(Heading1, style.NameLocal) >= 0)
                 {
                     if(!String.IsNullOrEmpty(line.Trim()))
-                      totaltext += "\r\n#" + line;
+                      totaltext += "\r\n# " + line;
                 }
                 else if (Array.IndexOf(Heading2, style.NameLocal) >= 0)
                 {
                     if (!String.IsNullOrEmpty(line.Trim()))
-                        totaltext += "\r\n##" + line;
+                        totaltext += "\r\n## " + line;
                 }
                 else if (Array.IndexOf(Heading3, style.NameLocal) >= 0)
                 {
                     if (!String.IsNullOrEmpty(line.Trim()))
-                        totaltext += "\r\n###" + line;
+                        totaltext += "\r\n### " + line;
                 }
                 else if (Array.IndexOf(CodeStyle, style.NameLocal) >= 0)
                 {
@@ -455,7 +538,10 @@ namespace Word2Markdown
                 }
                 bInCode = false;
             }
-            totaltext += "\nAutogenerated from Microsoft Word by [Word2Markdown](https://github.com/johnmichaloski/SoftwareGadgets/tree/master/Word2Markdown)";
+            totaltext += "\n\n![Word2Markdown](./images/word2markdown.jpg)\n\n";
+            string p = ExePath();
+            File.Copy(ExePath() + "\\word2markdown.jpg", this.foldername + "images\\word2markdown.jpg", true);
+            totaltext += "Autogenerated by [Word2Markdown](https://github.com/johnmichaloski/SoftwareGadgets/tree/master/Word2Markdown)";
             sw.Write(totaltext);
             sw.Close();
             //  You placed a large amount of content on the clipboard HEADACHE...
@@ -463,10 +549,11 @@ namespace Word2Markdown
             //oWord.Application.DisplayAlerts =  WdAlertLevel.wdAlertsNone ;  // Doesn't work
             oWordDoc.Close(WdSaveOptions.wdDoNotSaveChanges);
             oWord.Quit();
+            File.Delete(filecopy);
             System.Windows.Forms.MessageBox.Show("Done!");
         }
         /// <summary>
-        ///     Saves the clipboard into the given filename as a jpg.  Uses System.Drawing.Image
+        ///     Saves the clipboard into the given filename as a gif.  Uses System.Drawing.Image
         /// </summary>
         public void SaveClipboardImage(string filename)
         {
@@ -479,7 +566,7 @@ namespace Word2Markdown
                     //To Save as Bitmap
                     //oImgObj.Save("c:\\Test.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                     //To Save as Jpeg
-                    oImgObj.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    oImgObj.Save(filename, System.Drawing.Imaging.ImageFormat.Gif);
                     //To Save as Gif
                     //oImgObj.Save("c:\\Test.gif", System.Drawing.Imaging.ImageFormat.Gif);
                 }
