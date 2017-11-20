@@ -25,8 +25,8 @@ Copy*.*
 *.sdf
 ~*.*
 *.ipch
-*.msi
 *.msx
 *.dll
 *.lib
+*.exe
 >>>>>>> 352b2c2430392443c49cd6840fdc93f1050afb6d
