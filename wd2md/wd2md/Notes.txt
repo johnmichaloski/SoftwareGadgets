@@ -1,0 +1,48 @@
+﻿
+
+Not sure Github markdown needs anchor, but google plug in does
+# Table of Contents
+1. [Quick Use](#Quick Use)
+2. [Capture Format](#Capture Format)
+3. [Configuring the Source Code for Compilation](#Configuring-the-Source-Code-for-Compilation)	
+	a. [C++ Header Configuration](##C++-Header-Configuration)
+
+** 
+
+# <a name="Quick Use"></a> Quick Use
+...
+
+Wed 11/15/17 11:30:38 AM
+INI FILE IN C# OLD SCHOOOL:
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace <INSERT_NAMESPACE_HERE>
+{
+    public class INIFile
+    {
+        public string path { get; private set; }
+
+        [DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section, string key,string val,string filePath);
+        [DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section, string key,string def, StringBuilder retVal, int size,string filePath);
+
+        public INIFile(string INIPath)
+        {
+            path = INIPath;
+        }
+        public void IniWriteValue(string Section, string Key, string Value)
+        {
+            WritePrivateProfileString(Section, Key, Value, this.path);
+        }
+        
+        public string IniReadValue(string Section,string Key)
+        {
+            StringBuilder temp = new StringBuilder(255);
+            int i = GetPrivateProfileString(Section, Key, "", temp, 255, this.path);
+            return temp.ToString();
+        }
+    }
+}

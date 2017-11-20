@@ -1,0 +1,7 @@
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\bin\Release\wd2md.exe
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\bin\Release\wd2md.pdb
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Form1.resources
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Properties.Resources.resources
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.csproj.GenerateResource.Cache
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.exe
+c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.pdb
