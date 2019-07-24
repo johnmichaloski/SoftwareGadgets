@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Word2Markdown", "Word2Markdown\Word2Markdown.csproj", "{B3EF4F12-7312-4A01-A836-A6B371E3B7B8}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "wd2mdsetup", "wd2mdsetup\wd2mdsetup.vdproj", "{D05AE018-A14F-4937-8DBB-EB9F50155C00}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3EF4F12-7312-4A01-A836-A6B371E3B7B8}.Debug|x86.ActiveCfg = Debug|x86
+		{B3EF4F12-7312-4A01-A836-A6B371E3B7B8}.Debug|x86.Build.0 = Debug|x86
+		{B3EF4F12-7312-4A01-A836-A6B371E3B7B8}.Release|x86.ActiveCfg = Release|x86
+		{B3EF4F12-7312-4A01-A836-A6B371E3B7B8}.Release|x86.Build.0 = Release|x86
+		{D05AE018-A14F-4937-8DBB-EB9F50155C00}.Debug|x86.ActiveCfg = Debug
+		{D05AE018-A14F-4937-8DBB-EB9F50155C00}.Release|x86.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

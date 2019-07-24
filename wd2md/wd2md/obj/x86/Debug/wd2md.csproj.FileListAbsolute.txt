@@ -14,3 +14,4 @@ D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Debug\wd2md
 D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Debug\wd2md.Properties.Resources.resources
 D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Debug\wd2md.csproj.GenerateResource.Cache
 D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Debug\wd2md.csprojResolveAssemblyReference.cache
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\bin\Debug\wd2md.XML

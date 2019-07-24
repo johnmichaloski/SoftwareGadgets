@@ -23,12 +23,15 @@ namespace wd2md
         public string mdfilename = ""; /// markdown filename
         public string dialogtitle; /// saved dialog title for restoring
         public string appnamever;  // app name and version string
-        string[] ListStyle = new string[] { };
-        string[] CodeStyle = new string[] { };
-        string[] TitleStyle = new string[] { };
-        string[] Heading1 = new string[] { };
-        string[] Heading2 = new string[] { };
-        string[] Heading3 = new string[] { };
+
+        // Style definition mappings
+        public static string[] ListStyle = { "List Paragraph" };
+        public static string[] CodeStyle = { "BoxedCode" };
+        public static string[] TitleStyle = { "Title" };
+        public static string[] Heading1 = { "Heading 1", "Heading1", "H1" };
+        public static string[] Heading2 = { "Heading 2" };
+        public static string[] Heading3 = { "Heading 3" };
+
         bool bRunning = false;
 
         public WordAutomation wd = new WordAutomation();
@@ -46,15 +49,24 @@ namespace wd2md
 
             appnamever = string.Format("{0} : {1}", assemblyName.Name, assemblyName.Version.ToString());
             this.Text = appnamever;
-            string exefolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\";
-            ini = new IniReader(exefolder + "Config.ini");
-            string list = ini.GetSetting("STYLES", "List");
-            string[] ListStyle = ini.GetValues("STYLES", "List", ',');
-            string[] CodeStyle = ini.GetValues("STYLES", "Code", ',');
-            string[] TitleStyle = ini.GetValues("STYLES", "Title", ',');
-            string[] Heading1 = ini.GetValues("STYLES", "Heading1", ',');
-            string[] Heading2 = ini.GetValues("STYLES", "Heading2", ',');
-            string[] Heading3 = ini.GetValues("STYLES", "Heading3", ',');
+            try
+            {
+                string exefolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\";
+                ini = new IniReader(exefolder + "Config.ini");
+                string list = ini.GetSetting("STYLES", "List");
+                ListStyle = ini.GetValues("STYLES", "List", ',');
+                CodeStyle = ini.GetValues("STYLES", "Code", ',');
+                TitleStyle = ini.GetValues("STYLES", "Title", ',');
+                Heading1 = ini.GetValues("STYLES", "Heading1", ',');
+                Heading2 = ini.GetValues("STYLES", "Heading2", ',');
+                Heading3 = ini.GetValues("STYLES", "Heading3", ',');
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: Could not read config.ini file from disk. Original error: " + ex.Message);
+ 
+            }
+
         }
 
         /// <summary>
@@ -129,6 +141,10 @@ namespace wd2md
             try
             {
                 wd.bInsertTOC = checkBox1.Checked;
+                if (mdTypeComboBox.Text == "Github")
+                    wd.mdtype = WordAutomation.MdTypes.Github;
+                else if (mdTypeComboBox.Text == "SourceForge")
+                    wd.mdtype = WordAutomation.MdTypes.SourceForge;
 
                 // Assign styles to match against... if assigned
                 if (ListStyle.Length > 0)
@@ -233,5 +249,13 @@ namespace wd2md
                 }
             }
         }
+
+        private void stylelabelellipsis_Click(object sender, EventArgs e)
+        {
+            wd2md.Form2 styleDlg = new Form2();
+            styleDlg.Show(this);
+
+        }
+
     }
 }

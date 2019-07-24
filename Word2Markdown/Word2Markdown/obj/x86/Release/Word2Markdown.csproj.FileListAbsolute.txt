@@ -1,0 +1,8 @@
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Release\Word2Markdown.exe
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Release\Word2Markdown.pdb
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.Form1.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.Properties.Resources.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.csproj.GenerateResource.Cache
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.exe
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.pdb
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Release\Word2Markdown.csprojResolveAssemblyReference.cache

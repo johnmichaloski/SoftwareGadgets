@@ -106,6 +106,20 @@ public class IniReader
     }
 
     /// <summary>
+    /// Returns the value for the given section, key pair.
+    /// </summary>
+    /// <param name="sectionName">Section name.</param>
+    /// <param name="settingName">Key name.</param>
+    public void SetSetting(String sectionName, String settingName, String value)
+    {
+        SectionPair sectionPair;
+        sectionPair.Section = sectionName;
+        sectionPair.Key = settingName;
+
+        keyPairs[sectionPair] = value;
+    }
+
+    /// <summary>
     /// Enumerates all lines for given section.
     /// </summary>
     /// <param name="sectionName">Section to enum.</param>

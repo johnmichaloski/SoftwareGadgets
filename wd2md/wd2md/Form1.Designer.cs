@@ -43,6 +43,10 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label4 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.mdTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.stylelabelellipsis = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,8 +72,8 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(13, 144);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Location = new System.Drawing.Point(14, 179);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(234, 19);
             this.button1.TabIndex = 3;
@@ -80,7 +84,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(10, 24);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(237, 20);
             this.textBox1.TabIndex = 4;
@@ -88,7 +92,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(14, 71);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(234, 20);
             this.textBox2.TabIndex = 5;
@@ -97,7 +101,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 165);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 201);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
             this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -120,10 +124,11 @@
             // 
             this.label3.AutoEllipsis = true;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(96, 8);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(89, -3);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(16, 13);
+            this.label3.Size = new System.Drawing.Size(30, 25);
             this.label3.TabIndex = 10;
             this.label3.Text = "...";
             this.label3.Click += new System.EventHandler(this.label3_Click);
@@ -137,10 +142,11 @@
             // 
             this.label4.AutoEllipsis = true;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(119, 50);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(115, 41);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(16, 13);
+            this.label4.Size = new System.Drawing.Size(30, 25);
             this.label4.TabIndex = 11;
             this.label4.Text = "...";
             this.label4.Click += new System.EventHandler(this.label4_Click);
@@ -157,11 +163,59 @@
             this.checkBox1.Text = "Table Of Contents";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // mdTypeComboBox
+            // 
+            this.mdTypeComboBox.FormattingEnabled = true;
+            this.mdTypeComboBox.Items.AddRange(new object[] {
+            "Github",
+            "SourceForge"});
+            this.mdTypeComboBox.Location = new System.Drawing.Point(99, 121);
+            this.mdTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
+            this.mdTypeComboBox.Name = "mdTypeComboBox";
+            this.mdTypeComboBox.Size = new System.Drawing.Size(108, 21);
+            this.mdTypeComboBox.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(14, 122);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(77, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Markdowntype";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(14, 151);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(79, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Style Mappings";
+            // 
+            // stylelabelellipsis
+            // 
+            this.stylelabelellipsis.AutoEllipsis = true;
+            this.stylelabelellipsis.AutoSize = true;
+            this.stylelabelellipsis.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stylelabelellipsis.Location = new System.Drawing.Point(95, 139);
+            this.stylelabelellipsis.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.stylelabelellipsis.Name = "stylelabelellipsis";
+            this.stylelabelellipsis.Size = new System.Drawing.Size(30, 25);
+            this.stylelabelellipsis.TabIndex = 16;
+            this.stylelabelellipsis.Text = "...";
+            this.stylelabelellipsis.Click += new System.EventHandler(this.stylelabelellipsis_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(273, 187);
+            this.ClientSize = new System.Drawing.Size(273, 223);
+            this.Controls.Add(this.stylelabelellipsis);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.mdTypeComboBox);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -172,7 +226,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Word2Markdown";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -198,6 +252,10 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ComboBox mdTypeComboBox;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label stylelabelellipsis;
     }
 }
 

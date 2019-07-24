@@ -5,3 +5,13 @@ c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Rele
 c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.csproj.GenerateResource.Cache
 c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.exe
 c:\users\michalos\documents\visual studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.exe
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\bin\Release\wd2md.exe
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\bin\Release\wd2md.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Form1.resources
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Properties.Resources.resources
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.csproj.GenerateResource.Cache
+D:\michalos\michalos\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Form2.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.Form2.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\wd2md\wd2md\obj\x86\Release\wd2md.csprojResolveAssemblyReference.cache

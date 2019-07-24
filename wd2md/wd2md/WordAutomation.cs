@@ -19,6 +19,12 @@ using System.Diagnostics;
 
 namespace wd2md
 {
+
+    public class MdStyle
+    {
+        public string mdstyle { get; set; }
+        public string wdstyles { get; set; }
+    }
     /// <summary>
     /// TOC contains the information about a table of content entry. 
     /// This includes the string, the numbers for h1, h2, h3.
@@ -33,6 +39,7 @@ namespace wd2md
     /// </summary>
     public class TOC
     {
+
         /// <summary>
         /// This is the static heading counter. 
         /// Used by all instances of TOC.
@@ -115,6 +122,29 @@ namespace wd2md
         public string[] Heading1 = { "Heading 1", "Heading1", "H1" };
         public string[] Heading2 = { "Heading 2" };
         public string[] Heading3 = { "Heading 3" };
+
+
+        public enum MdTypes { Github = 1, SourceForge };
+        public MdTypes mdtype = MdTypes.Github;
+
+
+        /// <summary>
+        /// Complete references list
+        /// </summary>
+        public List<string> references = new List<string>();
+
+        /// <summary>
+        /// Reference index key into bibliography index. 
+        /// Used for multiple citations of the same reference.
+        /// </summary>
+        public Dictionary<int, int> cited = new Dictionary<int, int>();
+
+
+        
+        /// <summary>
+        /// The Microsoft XML bibliography.
+        /// </summary>
+        public XmlBibliography bib = new XmlBibliography();
 
         /// <summary>
         /// Table of contens handling, If enabled by bInsertTOC true,
@@ -220,7 +250,30 @@ namespace wd2md
         /// Empty constructor. Does nothing.
         /// </summary>
         public WordAutomation() { }
-        
+
+
+        /////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Markdown line feed equivalent. 3 cr/lfs for now.
+        /// </summary>
+        /// <returns> string containing new lines</returns>
+        public string md_newline()
+        {
+            return Environment.NewLine + Environment.NewLine + Environment.NewLine;
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// cleans a name from space for hyperlink, change space to '_'
+        /// </summary>
+        /// <param name="str">string to cleans</param>
+        /// <returns>cleansed string</returns>
+        public string CleanNametag(string str)
+        {
+            return str.Replace(" ", "_");
+        }
+
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Get all the beginning and end ranges of each table
         /// using word automation.
@@ -234,6 +287,7 @@ namespace wd2md
             }
         }
 
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Execution path of the application. 
         /// THis returns a file:// URI :(  File.Copy DOES not like.)
@@ -247,6 +301,7 @@ namespace wd2md
             return path;
         }
 
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Replace all subscripts and superscripts with HTML equivalent.
         /// Done by clearing word formatting, and inserting and prepending
@@ -317,6 +372,7 @@ namespace wd2md
             }
         }
 
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Converts drawing canvases to inline drawings using cut and paste special.
         /// </summary>
@@ -343,6 +399,7 @@ namespace wd2md
                     ref missing, ref missing);
             }
          }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Extracts all the image ranges into the ImageRanges data structure .
         /// </summary>
@@ -361,6 +418,7 @@ namespace wd2md
                 }
             }
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Saves all the image ranges into the folder images under the current filename folder.
         ///     Uses clipboard to copy and paste into image handler, which saves AS gif.
@@ -397,6 +455,7 @@ namespace wd2md
                 }
             }
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Determine if given paragraph p in found in the ImageRanges.
         /// </summary>
@@ -418,15 +477,23 @@ namespace wd2md
             }
             if (bInImage)
             {
-                // Unclear if figure on new line is appropriate - but in general better than not.
-                // Doesn't work totaltext = "\n\n<p align=\"center\"> ![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n</p>\n";
-                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n";
-                //totaltext = "\n\n![Figure" + iCounter.ToString() + "](./images/image" + iCounter.ToString() + ".gif?raw=true)\n\n";
-                totaltext = "\n\n![Figure" + iCounter.ToString() + "](./"+ wdfiletitle+"_images/"+ wdfiletitle+ "_image" + iCounter.ToString() + ".gif)\n\n";
-                // FIXME: next line should be centered if figure.
+                // Center the figure
+                totaltext += "\n\n<div style=\"text-align: center;\" markdown=\"1\">";
+                // Github and google addon markdown:
+                if (mdtype == MdTypes.Github)
+                {
+                    totaltext = "\n\n![Figure" + iCounter.ToString() + "](./" + wdfiletitle + "_images/" + wdfiletitle + "_image" + iCounter.ToString() + ".gif)\n\n";
+                }
+                // Sourceforge markdown: 
+                if (mdtype == MdTypes.SourceForge)
+                {
+                    totaltext += "\n\n![Figure" + iCounter.ToString() + "](./" + wdfiletitle + "_images/" + wdfiletitle + "_image" + iCounter.ToString() + ".gif?format=raw)\n\n";
+                }
+                totaltext += "\n\n</div>";
             }
             return totaltext;
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Determine if given paragraph p in found in the TablesRanges.
         /// </summary>
@@ -451,10 +518,10 @@ namespace wd2md
             }
             if (bInTable)
             {
-                totaltext += "\r\n<TABLE>";
+                totaltext += "\r\n<table>";
                 foreach (Row aRow in oWordDoc.Tables[iCounter].Rows)
                 {
-                    totaltext += "\r\n<TR>";
+                    totaltext += "\r\n<tr>";
 
                     foreach (Cell aCell in aRow.Cells)
                     {
@@ -462,17 +529,18 @@ namespace wd2md
                         char[] delimiterChars = { '\r' };
                         string[] words = currLine.Split(delimiterChars);
 						// Fixme  - single line cells only have \r\a
-                        currLine = currLine.Replace("\r", "<BR>");  
+                        currLine = currLine.Replace("\r", "<br>");  
 
                         // Count the number of paragraphs?
-                        totaltext += "\r\n<TD>" + currLine + "</TD>";
+                        totaltext += "\r\n<td>" + currLine + "</td>";
                     }
-                    totaltext += "\r\n</TR>";
+                    totaltext += "\r\n</tr>";
                 }
-                totaltext += "\r\n</TABLE>";
+                totaltext += "\r\n</table>";
             }
             return totaltext;
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Let's remove trailing spaces and comma.
         /// </summary>
@@ -492,6 +560,7 @@ namespace wd2md
            return inputString.Trim(" \r\n\t\a".ToArray());
          }
 
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Looks at each word in a paragraph and formats font if word is bold or underlined.
         /// </summary>
@@ -564,6 +633,7 @@ namespace wd2md
                 toc.Delete();
             }
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Inputs word file to convert. 
         /// </summary>
@@ -601,6 +671,7 @@ namespace wd2md
             return 0;
         }
         public bool isDone() { return bDone; }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Generate a table of contents using all the H1,H2,H3 sections
         /// that were found. Creates a string with local reference to href 
@@ -621,18 +692,18 @@ namespace wd2md
                     //if(toc[i].hdr[2]==1)
                     //    tablecontents += "\r\n";
                     string num = toc[i].hdr[0].ToString() + "." + toc[i].hdr[1].ToString() + "." + toc[i].hdr[2].ToString();
-                    tablecontents += "\r\n\r\n    " + num + "[" + toc[i].heading + "](#" + toc[i].heading + ")";
+                    tablecontents += "\r\n\r\n    " + num + "[" + toc[i].heading + "](#" +CleanNametag( toc[i].heading) + ")";
                 }
                 else if (toc[i].hdr[1] > lasttoc.hdr[1])
                 {
                     //if (toc[i].hdr[1] == 1)
                     //    tablecontents += "\r\n";
                     string num = toc[i].hdr[0].ToString() + "." + toc[i].hdr[1].ToString();
-                    tablecontents += "\r\n\r\n  " + num + " [" + toc[i].heading + "](#" + toc[i].heading + ")";
+                    tablecontents += "\r\n\r\n  " + num + " [" + toc[i].heading + "](#" + CleanNametag(toc[i].heading) + ")";
                 }
                 else if (toc[i].hdr[0] > lasttoc.hdr[0])
                 {
-                    tablecontents += "\r\n\r\n" + toc[i].hdr[0].ToString() + " [" + toc[i].heading + "](#" + toc[i].heading + ")";
+                    tablecontents += "\r\n\r\n" + toc[i].hdr[0].ToString() + " [" + toc[i].heading + "](#" + CleanNametag(toc[i].heading) + ")";
                 }
                 lasttoc = toc[i];
             }
@@ -640,6 +711,141 @@ namespace wd2md
             return text.Replace(tocpattern, tablecontents);
         }
 
+
+        /////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Loops through math fields, and replaces with markdown equivalent. 
+        /// At this time, uses codecog translation, becuase can't figure out how to
+        /// install mathjax script into markdown.
+        /// </summary>
+        public void HandleMath()
+        {
+
+            OMaths maths = oWordDoc.OMaths;
+            //foreach (OMath math in maths)
+            for (int i = oWordDoc.OMaths.Count; i > 0; i--)
+            {
+                OMath math = maths[i];
+                math.ConvertToNormalText();
+                // inline = 1 wdOMathInline
+                math.Range.Select();
+                WdOMathType type = math.Type;
+                string text;
+                Range rngFieldCode = math.Range;
+                text = rngFieldCode.Text;
+                //string urlencoded = Uri.EscapeDataString(text);
+                //urlencoded=urlencoded.Replace("%20", "&space");
+                string urlencoded = text;
+                //urlencoded=urlencoded.Replace("\\\\", "\\");
+                urlencoded = urlencoded.Replace(" ", "&space;");
+                string field = " <img src=\"https://latex.codecogs.com/svg.latex?" + urlencoded
+                    + "\" title=\"" + urlencoded + "\" /> ";
+                Debug.Print(field);
+                Object styleNormal = "Normal";
+                oWord.Selection.set_Style(ref styleNormal);
+                oWord.Selection.Range.Bold = 0;
+                oWord.Selection.Range.Italic = 0;
+                oWord.Selection.InsertBefore(field);
+
+                math.Range.Delete();
+                math.Remove();
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Loop through all fields and replace references with markdown equivalent.
+        /// 
+        /// </summary>
+        public void HandleReferenceFields()
+        {
+            int counter = 0;
+            foreach (Field myField in oWordDoc.Fields)
+            {
+                Range rngFieldCode = myField.Code;
+                String fieldText = rngFieldCode.Text;
+                fieldText = fieldText.Trim();  // get rid of optional leading space
+                Debug.Print("Field code = " + fieldText + "\n");
+                if (fieldText.StartsWith("CITATION"))
+                {
+
+                    String fieldType = "CITATION";
+                    Int32 fieldLen = fieldType.Length;
+                    Int32 endMerge = fieldText.IndexOf("\\");
+                    Int32 fieldNameLength = fieldText.Length - endMerge;
+                    String fieldName = fieldText.Substring(fieldLen, endMerge - fieldLen);
+                    fieldName = fieldName.Trim();
+
+                    // Find index of this reference to 
+                    int n = this.bib.Index(fieldName);
+                    if (n < 0)
+                        Debugger.Break();
+
+                    int citation = new List<int>(cited.Keys).IndexOf(n);
+                    if (citation == -1)
+                    {
+                        counter++;
+                        cited.Add(n, counter);
+                        citation = counter;
+
+                        // Save citation with new reference in bibliography 
+                        string bibentry = "\\[" + citation.ToString() + "\\] " + "<a name=\"Reference_" + citation.ToString() + "\"></a>" + this.bib.Entry(fieldName);
+                        references.Add(bibentry);
+                    }
+                    else
+                    {
+                        // Citation is to existing reference in bibliography. Use this citation.
+                        citation = cited[n];
+                    }
+
+
+                    // select field  and replace with markdown field
+                    string field = "\\[[" + citation.ToString() + "]" + "(#Reference_" + citation.ToString() + ")\\]";
+                    myField.Select();
+                    myField.Delete();
+                    //oWord.Selection.InsertBefore(field);
+                    oWord.Selection.TypeText(field);
+
+                }
+                else if (fieldText.StartsWith("BIBLIOGRAPHY"))
+                {
+
+                }
+                else if (fieldText.StartsWith("SEQ"))
+                {
+
+                }
+                else if (fieldText.StartsWith("REF"))
+                {
+
+                }
+                else if (fieldText.StartsWith("HYPERLINK"))
+                {
+
+                }
+                else
+                {
+                    //Debugger.Break();
+
+                }
+
+                // SEQ, REF, HYPERLINK
+                // e.g.  HYPERLINK "https://codeocean.com/ieee/signup" \t "_blank"
+                // SEQ Figure \* ARABIC
+
+                //// CITATION chandrasekaran2013computational \l 1033 
+                //if (myField.Type == WdFieldType.wdFieldCitation)
+                //{
+
+                //}
+                //else if (myField.Type == WdFieldType.wdFieldBibliography)
+                //{
+
+                //}
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Converts word document into markdown text document.
         /// Typically runs as STA thread. Uses nCurParagraph to indicate progress.
@@ -662,6 +868,24 @@ namespace wd2md
                 //MAKING THE APPLICATION VISIBLE
                 //oWord.Visible = true;
                 oWord.Visible = false; // really don't want to mess around with word doc
+
+                int cnt = oWordDoc.Bibliography.Sources.Count;
+                Debug.Print(oWordDoc.Bibliography.ToString());
+
+                string bibxml = "<b:Sources xmlns:b=\"http://schemas.openxmlformats.org/officeDocument/2006/bibliography\" xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/bibliography\" SelectedStyle=\"\">";
+                foreach (Source source in oWordDoc.Bibliography.Sources)
+                {
+                    bibxml += source.XML;
+                }
+                bibxml += "</b:Sources>";
+                Debug.Print(bibxml);
+
+                 HandleMath();
+
+                //bib.parseXmlFile(@"C:\Users\michalos\AppData\Roaming\Microsoft\Bibliography\Sources.xml");
+                bib.parseXml(bibxml);
+                HandleReferenceFields();
+
 
                 ReplaceSmartQuotes();
                 // FIXME: replace all goofy word characters to utf8 characters
@@ -718,7 +942,7 @@ namespace wd2md
                         if (!String.IsNullOrEmpty(line.Trim()))
                         {
                             toc.Add(TOC.H1(line.Trim()));
-                            totaltext += "\r\n# <a name=\"" + line.Trim() + "\"></a>" + line;
+                            totaltext += "\r\n# <a name=\"" + CleanNametag(line.Trim()) + "\"></a>" + line;
                         }
                     }
                     else if (Array.IndexOf(Heading2, style.NameLocal) >= 0)
@@ -726,7 +950,7 @@ namespace wd2md
                         if (!String.IsNullOrEmpty(line.Trim()))
                         {
                             toc.Add(TOC.H2(line.Trim()));
-                            totaltext += "\r\n## <a name=\"" + line.Trim() + "\"></a>" + line;
+                            totaltext += "\r\n## <a name=\"" + CleanNametag(line.Trim()) + "\"></a>" + line;
                         }
                     }
                     else if (Array.IndexOf(Heading3, style.NameLocal) >= 0)
@@ -734,7 +958,7 @@ namespace wd2md
                         if (!String.IsNullOrEmpty(line.Trim()))
                         {
                             toc.Add(TOC.H3(line.Trim()));
-                            totaltext += "\r\n### <a name=\"" + line.Trim() + "\"></a>" + line;
+                            totaltext += "\r\n### <a name=\"" + CleanNametag(line.Trim()) + "\"></a>" + line;
                         }
                     }
                     else if (Array.IndexOf(CodeStyle, style.NameLocal) >= 0)
@@ -791,6 +1015,15 @@ namespace wd2md
                 {
                     totaltext = generateTOC(totaltext);
                 }
+
+                if (references.Count > 0)
+                    totaltext+="# References" + this.md_newline();
+                for (int i = 0; i < references.Count; i++)
+                {
+                    //totaltext += references[i] + this.md_newline();
+                    totaltext+=references[i] + this.md_newline();
+                }
+
                 sw.Write(totaltext);
                 sw.Close();
                 //  You placed a large amount of content on the clipboard HEADACHE...
@@ -811,6 +1044,7 @@ namespace wd2md
             }
             bDone = true;
         }
+        /////////////////////////////////////////////////////////////////////////
         /// <summary>
         ///     Saves the clipboard into the given filename as a gif.  Uses System.Drawing.Image
         /// </summary>
@@ -832,6 +1066,7 @@ namespace wd2md
             }
 
         }
+        /////////////////////////////////////////////////////////////////////////
         // Herein under this comment are some VBA routines mapped into C#, and untested.
         // http://labs.physics.berkeley.edu//index.php/Doc_To__Converter 
         private void EscapeCharacter(string c)

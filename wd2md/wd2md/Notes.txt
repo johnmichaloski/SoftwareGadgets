@@ -1,4 +1,50 @@
 ﻿
+Fri 11/24/2017_15:25:33.10  
+
+open command prompt at local sourceforge git folder
+> git add .
+> git commit -a -m "message"
+> git push origin master 
+
+Wed 11/22/17 02:14:13 PM
+add form to map md to wd styles
+
+Wed 11/22/17 12:19:12 PM
+problem installing on win32 system
+
+Wed 11/22/17 11:24:08 AM
+found config.ini does not exist problem
+just flag with messagebox
+
+Wed 11/22/17 11:22:54 AM
+added png/icon to sourceforge project
+attempted to add icon to project
+used http://icoconvert.com/old.php
+to convert png into ico.
+
+In Solution Explorer, choose a project node (not the Solution node).
+On the menu bar, choose Project, Properties.
+When the Project Designer appears, choose the Application tab.
+C# Near the Icon list, choose the <Browse...> button, and then browse to the location of the icon file that you want.
+
+Tue 11/21/2017_15:35:26.22  
+Problem with source forge not recognizing old html CAPITALIZED tags, e.g., <TABLE>
+Changed all table and div related tags to lowercase standards compliant. 
+
+Tue 11/21/2017_15:34:58.26  
+Centering the figures: used <DIV    > </DIV> with align center
+https://answers.squarespace.com/questions/76169/how-do-i-center-the-text-from-my-html-code-in-markdown.html
+
+Tue 11/21/2017_15:08:22.14  
+Get images to display in Sourceforge markdown
+This "downloads" the image:
+https://sourceforge.net/p/softwaregadgets/code/ci/master/tree/wd2md/Word2MarkdownReadme_images/Word2MarkdownReadme_image1.gif?format=raw
+
+Tue 11/21/2017_13:20:15.86  
+Sourceforge markdown:
+https://sourceforge.net/p/resizeimages/discussion/markdown_syntax#md_ex_img
+[[img src=attached-image.jpg alt=foobar]]
+
 
 Not sure Github markdown needs anchor, but google plug in does
 # Table of Contents

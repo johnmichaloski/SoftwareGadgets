@@ -27,6 +27,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_ACFACBA84F5C4B7D9DE19D59CA50DA0C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DEEF84E1E67C418384CBBF14395245CC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8584946D2C52431883A4D3640AB57FD3"
         "MsmSig" = "8:_UNDEFINED"
@@ -49,6 +61,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -65,6 +98,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -114,6 +168,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ACFACBA84F5C4B7D9DE19D59CA50DA0C"
+            {
+            "SourcePath" = "8:..\\wd2md\\bin\\Debug\\Config.ini"
+            "TargetName" = "8:Config.ini"
+            "Tag" = "8:"
+            "Folder" = "8:_7E0D03EC17B74B8986513B78B40ADC2D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DEEF84E1E67C418384CBBF14395245CC"
+            {
+            "SourcePath" = "8:..\\Word2MarkdownReadme.docx"
+            "TargetName" = "8:Word2MarkdownReadme.docx"
+            "Tag" = "8:"
+            "Folder" = "8:_7E0D03EC17B74B8986513B78B40ADC2D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -129,6 +223,17 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_40503D1259BE4282A58E6069B54C6016"
+                    {
+                    "Name" = "8:wd2md"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_FAE89B33F20344668F47A04B117D49EE"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_7B4C4097A44E47FCBB3D205D1A0B6597"
@@ -171,7 +276,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:wd2md"
         "ProductCode" = "8:{B1A43359-1016-4451-9161-1F054ED8CFC7}"
-        "PackageCode" = "8:{CD2830C7-C91B-4C0A-B191-C60C03FAF311}"
+        "PackageCode" = "8:{02C0B17C-EE36-4E5E-A0B6-54DA66B58D66}"
         "UpgradeCode" = "8:{292D0F7A-296F-4921-841E-AAEBF2F8BD82}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -182,7 +287,7 @@
         "Manufacturer" = "8:Lamo"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:wd2mdsetup"
+        "Title" = "8:wd2md install"
         "Subject" = "8:"
         "ARPCONTACT" = "8:John Michaloski"
         "Keywords" = "8:"
@@ -293,16 +398,30 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_936A7CC0D55B4C60A23B25D7885F400F"
             {
-            "Name" = "8:Word2Markdown"
+            "Name" = "8:wd2md"
             "Arguments" = "8:"
             "Description" = "8:Turns word documents into markdown documents including images. No math or TOC."
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_8584946D2C52431883A4D3640AB57FD3"
-            "Folder" = "8:_230A46695AA94E36BE431F88C53AF019"
+            "Folder" = "8:_40503D1259BE4282A58E6069B54C6016"
             "WorkingFolder" = "8:_7E0D03EC17B74B8986513B78B40ADC2D"
             "Icon" = "8:_A2B1FD52374340729ED674EA123B9CCD"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_B05CAA096EE343468CBCFD13FDD6C681"
+            {
+            "Name" = "8:Help in word"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_DEEF84E1E67C418384CBBF14395245CC"
+            "Folder" = "8:_40503D1259BE4282A58E6069B54C6016"
+            "WorkingFolder" = "8:_7E0D03EC17B74B8986513B78B40ADC2D"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
@@ -762,7 +881,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_8584946D2C52431883A4D3640AB57FD3"
             {
-            "SourcePath" = "8:..\\wd2md\\obj\\x86\\Debug\\wd2md.exe"
+            "SourcePath" = "8:..\\wd2md\\obj\\x86\\Release\\wd2md.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E0D03EC17B74B8986513B78B40ADC2D"

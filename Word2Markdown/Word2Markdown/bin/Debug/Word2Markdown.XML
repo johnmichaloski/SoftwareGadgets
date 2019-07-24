@@ -1,0 +1,521 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Word2Markdown</name>
+    </assembly>
+    <members>
+        <member name="T:Word2Markdown.Form1">
+            <summary>
+            THe problem is that the images require the clipboard which is part of the GUI thread
+            in order to make a gif image for markdown. So WordAutomation class MUST run in the GUI thread 
+            NOT as a background worker thread.  Its unfortunate that the clipboard must be used to
+            copy the inline picture and convert to gif, but life is too short to figure out 
+            otherwise. So  WordAutomation class MUST run in the GUI thread for now.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.Form1.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.Form1.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Word2Markdown.Form1.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Word2Markdown.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Word2Markdown.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Word2Markdown.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:Word2Markdown.TOC">
+            <summary>
+            TOC contains the information about a table of content entry. 
+            This includes the string, the numbers for h1, h2, h3.
+            For example, 1.2 give a number array: 1,2,0.
+            1.2.1 gives a number array of 1,2,1.
+            When no subsection, the number is zero.
+            A static array is kept to keep track of the
+            detecting of headings. H1,H2,H3 are also
+            static methods to create a TOC entry using
+            the static index array, and adding the section
+            name string.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.TOC.h">
+            <summary>
+            This is the static heading counter. 
+            Used by all instances of TOC.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.TOC.hdr">
+            <summary>
+            Instance data of a TOC.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.TOC.heading">
+            <summary>
+             String of the header.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.TOC.#ctor">
+            <summary>
+            Constructor. Builds empty TOC.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.TOC.H1(System.String)">
+            <summary>
+            Builds H1 TOC, using static section "odometer".
+            User provides TOC H1 label as string.
+            </summary>
+            <param name="hdr">heading label</param>
+            <returns> new TOC </returns>
+        </member>
+        <member name="M:Word2Markdown.TOC.H2(System.String)">
+            <summary>
+            Builds H2 TOC, using static section "odometer".
+            User provides TOC 2 label as string.
+            </summary>
+            <param name="hdr">heading2 label </param>
+            <returns>new TOC</returns>
+        </member>
+        <member name="M:Word2Markdown.TOC.H3(System.String)">
+            <summary>
+            Builds H3 TOC, using static section "odometer".
+            User provides TOC 3 label as string.
+            </summary>
+            <param name="hdr">heading2 label </param>
+            <returns>new TOC</returns>
+        </member>
+        <member name="T:Word2Markdown.WordAutomation">
+            <summary>
+                Handles the word automation and conversion into Markdown.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.tocpattern">
+            <summary>
+            Table of contens handling, If enabled by bInsertTOC true,
+            inserts a placeholder (tocpattern) into the md text.
+            After the document has been processed, it then inserts
+            a table of contents where the placeholder was inserted.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.toc">
+            <summary>
+            List of table of contents entries: h1,h2,h3 and equivalents
+            are saved into toc.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bFoundTOC">
+            <summary>
+            Boolean true if found table of contents in document.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bInsertTOC">
+            <summary>
+            Boolean true if table of contents should be inserts.
+            FIXME: if no toc in word, no TOC marker is placed in
+            document.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bInCode">
+            <summary>
+            in code progressing
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.sw">
+            <summary>
+            Fake stream to write output.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.TablesRanges">
+            <summary>
+                List of all tables and their ranges.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.ImageRanges">
+            <summary>
+                List of all images and their ranges.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bib">
+            <summary>
+            The Microsoft XML bibliography.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.oWordDoc">
+            <summary>
+                Word application COM variable.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.oWord">
+            <summary>
+                Word document COM variable.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.filename">
+            <summary>
+                Filename of the current word file undergoing conversione.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.foldername">
+            <summary>
+                Foldername of the current word file undergoing conversion.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.filetitle">
+            <summary>
+                File title of current word file undergoing conversion. Useful for differentiating images.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.filecopy">
+            <summary>
+                File title of current word file undergoing conversion. Useful for differentiating images.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.references">
+            <summary>
+            Complete references list
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.cited">
+            <summary>
+            Reference index key into bibliography index. 
+            Used for multiple citations of the same reference.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bRunning">
+            <summary>
+            synchronization variable for words/paragraph loop. 
+            To abort set brunning to false before done.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.WordAutomation.bDone">
+            <summary>
+            synchronization variable indicating word to markdown down, either completed or aborted.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Word2Markdown.WordAutomation.linenum" -->
+        <member name="F:Word2Markdown.WordAutomation.syncLock">
+            <summary>
+            mutex varaible for running, done flags
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Word2Markdown.WordAutomation.status" -->
+        <member name="M:Word2Markdown.WordAutomation.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.GetTableRanges">
+            <summary>
+                Copied filename of the current word file undergoing conversione.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.md_newline">
+            <summary>
+            Markdown line feed equivalent. 3 cr/lfs for now.
+            </summary>
+            <returns> string containing new lines</returns>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ExePath">
+            <summary>
+            Get path of executable app.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.WdFindAllSubscripts">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ConvertShapesToInline">
+            <summary>
+                Converts drawing canvases to inline drawings using cut and paste special.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.GetImageRanges">
+            <summary>
+                Extracts all the image ranges into the ImageRanges data structure .
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.SaveAllImages(System.String)">
+            <summary>
+                Saves all the image ranges into the folder images under the current filename folder.
+                Uses clipboard to copy and paste into image handler, which saves AS gif.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.InImage(Microsoft.Office.Interop.Word.Paragraph)">
+            <summary>
+                Determine if given paragraph p in found in the ImageRanges.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.InTable(Microsoft.Office.Interop.Word.Paragraph,Microsoft.Office.Interop.Word.Range@)">
+            <summary>
+                Determine if given paragraph p in found in the TablesRanges.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.TrimEnd(System.String,System.String@)">
+            <summary>
+            Let's remove trailing spaces and comma.
+            </summary>
+            <param name="inputString"> string to trim and save </param>
+            <returns> trimmed string of \r\b\t and space</returns>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.Words(Microsoft.Office.Interop.Word.Paragraph)">
+            <summary>
+                Looks at each word in a paragraph and formats font if word is bold or underlined.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.DeleteTableOfContents">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.generateTOC(System.String)">
+            <summary>
+            Generate a table of contents using all the H1,H2,H3 sections
+            that were found. Creates a string with local reference to href 
+            in the md file.
+            </summary>
+            <param name="text">string containing the TOC </param>
+            <returns></returns>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.HandleMath">
+            <summary>
+            Loops through math fields, and replaces with markdown equivalent. 
+            At this time, uses codecog translation, becuase can't figure out how to
+            install mathjax script into markdown.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.HandleReferenceFields">
+            <summary>
+            Loop through all fields and replace references with markdown equivalent.
+            
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.Init">
+            <summary>
+            
+            </summary>
+            <param name="callback"></param>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.Init(System.Action{System.Int32})">
+            <summary>
+                Pops dialog to retrieve word file to convert. Saves images, all image and table ranges, and
+            then processes each paragraph. If image or table, handles. Tables are currently handled as HTML.
+            If other style, mapping is performed.
+            Output is streamed to Readme.md in the same folder as the oringal work file. 
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.SaveClipboardImage(System.String)">
+            <summary>
+                Saves the clipboard into the given filename as a gif.  Uses System.Drawing.Image
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.EscapeCharacter(System.String)">
+            <summary>
+            Word replace of string with escape prefix
+            </summary>
+            <param name="c"></param>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.EscapeChars">
+            <summary>
+            Escape HTML sensitive characters in word document.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.WdMakeCopy(System.String)">
+            <summary>
+            use word automation to make a copy of document. Seems untested and wrong.
+            </summary>
+            <param name="filename"> filename</param>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.WdLeftAlign">
+            <summary>
+            Left align word document
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ConvertHyperlinks">
+            <summary>
+            Convert Word hyperlinks  to markdown equivalent
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.WdReplaceString(System.String,System.String)">
+            <summary>
+            Word automation to replace string with new string
+            </summary>
+            <param name="findStr"> string to find</param>
+            <param name="replacementStr"> string to replace with</param>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.WdReplaceSmartQuotes">
+            <summary>
+            Replace word's smart quotes with straight quotes
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.MdReplaceHeading(System.String[],System.String)">
+            <summary>
+            Replace word markup of heading to markdown 
+            </summary>
+            <param name="styles"> array of styles to change</param>
+            <param name="headerPrefix">markdown prefix to line</param>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ConvertH1">
+            <summary>
+            Convert Word Heading1 to markdown equivalent
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ConvertH2">
+            <summary>
+            Convert Word Heading2 to markdown equivalent
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.WordAutomation.ConvertH3">
+            <summary>
+             Replace Word heading 3 with markdown heading 3
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.XmlBibAuthorList.parseAuthors(System.Xml.XmlNode,System.Xml.XmlNamespaceManager)">
+            <summary>
+            
+            </summary>
+            <param name="namelist"></param>
+            <param name="nsm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Word2Markdown.XmlBibAuthorList.Entry(System.Collections.Generic.List{Word2Markdown.XmlBibAuthor})">
+            <summary>
+            Creates a string author list from a list of authors
+            </summary>
+            <param name="authors"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Word2Markdown.XmlBibEntry">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibEntry.fields">
+            <summary>
+            List of fields of each bib type.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibEntry.bibentries">
+            <summary>
+            string dictionary of bib attribute and value
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibEntry.authors">
+            <summary>
+            List of authors
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibEntry.tag">
+            <summary>
+            The tag that identifies a bib entry
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.XmlBibEntry.#ctor">
+            <summary>
+            Constructor. Builds the fields for various bib types.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.XmlBibEntry.Entry">
+            <summary>
+            Builds a string for a bib entry.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Word2Markdown.XmlBibliography">
+            <summary>
+            Keeps track of all bibliography entries in a list collection collection.
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibliography.bibliographyNS">
+            <summary>
+            Location of bibliography XSD schema
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibliography.bibform">
+            <summary>
+            bibligraph xml document
+            </summary>
+        </member>
+        <member name="F:Word2Markdown.XmlBibliography.entries">
+            <summary>
+            Bib entries list.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.#ctor">
+            <summary>
+             constructor. initialize new bib entries list.
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.Find(System.String)">
+            <summary>
+            returns bibentry of matching tag bi bib entries list.
+            </summary>
+            <param name="tag"></param>
+            <returns>bib entry or null if not found</returns>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.Index(System.String)">
+            <summary>
+            returns index of matching tag bi bib entries list.
+            </summary>
+            <param name="tag"></param>
+            <returns> >=0 index if found or -1 if not found</returns>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.Entry(System.String)">
+            <summary>
+            produces string for given tag bib entry
+            </summary>
+            <param name="tag"> bibliography tag</param>
+            <returns> string for tag bib entry, empty string if not found</returns>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.Dump">
+            <summary>
+            Generate list of bibliography entries: tag + title + linefeed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.parseXml(System.String)">
+            <summary>
+            given an XML string parse the bibliogphy
+            </summary>
+            <param name="xml"> xmls string</param>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.parseXmlFile(System.String)">
+            <summary>
+            parse a given file that contains xml describing bibliography
+            </summary>
+            <param name="bibformIn"></param>
+        </member>
+        <member name="M:Word2Markdown.XmlBibliography.parseBibliography">
+            <summary>
+            using xmldoc parse bibligraphy for bib entries
+            </summary>
+        </member>
+        <member name="M:Word2Markdown.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+    </members>
+</doc>

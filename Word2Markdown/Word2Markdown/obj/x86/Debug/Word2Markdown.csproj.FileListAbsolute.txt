@@ -1,0 +1,17 @@
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.exe
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.pdb
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.Form1.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.Properties.Resources.resources
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.csproj.GenerateResource.Cache
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.exe
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.XML
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.exe
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.exe
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.pdb
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.csprojResolveAssemblyReference.cache
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.Form1.resources
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.Properties.Resources.resources
+D:\michalos\michalos\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\obj\x86\Debug\Word2Markdown.csproj.GenerateResource.Cache
+C:\Users\michalos\Documents\Visual Studio 2010\Projects\Word2Markdown\Word2Markdown\bin\Debug\Word2Markdown.XML
